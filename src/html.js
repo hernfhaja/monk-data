@@ -4,12 +4,18 @@ import PropTypes from "prop-types"
 export default function HTML(props) {
   return (
     <html {...props.htmlAttributes}>
+
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"></meta>
         {props.headComponents}
+        <script
+          charSet="utf-8"
+          src="https://static.line-scdn.net/liff/edge/versions/2.12.0/sdk.js"
+        ></script>
       </head>
+
       <body {...props.bodyAttributes}>
         {props.preBodyComponents}
         <div
@@ -26,7 +32,7 @@ export default function HTML(props) {
         <script src="https://source.zoom.us/zoom-meeting-1.9.6.min.js"></script>
       </body>
     </html>
-  )
+  );
 }
 
 HTML.propTypes = {
@@ -36,4 +42,4 @@ HTML.propTypes = {
   preBodyComponents: PropTypes.array,
   body: PropTypes.string,
   postBodyComponents: PropTypes.array,
-}
+};

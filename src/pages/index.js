@@ -3,6 +3,7 @@ import "../css/layout.css";
 import "../css/background-image.css";
 import Helmet from "react-helmet";
 import axios from "axios";
+import { format } from "date-fns";
 import Spinner from "@atlaskit/spinner";
 import { ZoomMtg } from "@zoomus/websdk";
 import Textfield from "@atlaskit/textfield";
@@ -14,7 +15,7 @@ import backBottom from "../images/logo.png";
 const isBrowser = typeof window !== "undefined";
 
 export default ({ props }) => {
-  useEffect(() => {
+  useEffect(async () => {
     import("@zoomus/websdk").then((module) => {
       const { ZoomMtg } = module;
 
@@ -26,7 +27,29 @@ export default ({ props }) => {
       ZoomMtg.i18n.load("en-US");
       ZoomMtg.i18n.reload("en-US");
     });
-  });
+
+    const liff = window.liff;
+    try {
+      await liff.init({ liffId: "1656224658-1LbP7pB9" });
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        try {
+          let response = await liff.getProfile();
+          if (Object.keys(response).length != 0) {
+            setuserData(response);
+          } else {
+            let response = await liff.getProfile();
+            setuserData(response);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   // data name
   let randomNumber = 0;
@@ -39,6 +62,7 @@ export default ({ props }) => {
     "ธรรมล้านดวง " + getRandomIntInclusive(100000, 999999).toString();
 
   const [value, setValue] = useState(randomNumber);
+  const [currentDate, setCurrentDate] = useState("");
   const handleChange = (e) => setValue(e.target.value);
 
   //data request
@@ -46,6 +70,7 @@ export default ({ props }) => {
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [data, setData] = useState({});
   const [urlData, setUrlData] = useState({});
+  const [userData, setuserData] = useState({});
 
   function startMeeting(signature, meetingNumber, passWord) {
     if (isBrowser) {
@@ -89,34 +114,81 @@ export default ({ props }) => {
 
   const requestTargetRoom = async () => {
     setIsLoading(true);
-
-    const result = await axios({
-      method: "get",
-      url: "https://api.thedhamma.net/redirect/room/new",
-    });
-
-    //console.log(result);
-    if (result.status === 200) {
-      setData(result.data);
-      const getSignatures = await axios({
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        url: "https://api.thedhamma.net/genSignature",
-        //url: "https://signsture-zoom.herokuapp.com/",
-        data: {
-          meetingNumber: result.data.roomID,
-          role: 0,
+    if (Object.keys(userData).length != 0) {
+      let dateData = new Date();
+      let query_date = format(dateData, "dd-MM-yyyy");
+      // change api
+      const checkDate = await axios({
+        method: "get",
+        url: "https://api.thedhamma.net/socialcollect/line/date",
+        params: {
+          date: query_date,
         },
       });
-      //console.log(getSignatures.data.signature);   heroku
-      //console.log(getSignatures.data);
-      startMeeting(
-        getSignatures.data,
-        result.data.roomID,
-        result.data.passcode
-      );
-    }
+      if (Object.keys(checkDate.data).length == 0) {
+        const postNewRecord = await axios({
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          url: "https://api.thedhamma.net/socialcollect/line/user",
+          data: {
+            user: {
+              userId: userData.userId,
+              userName: userData.displayName,
+              userProfile: userData.pictureUrl,
+              typeUrl: "web",
+              lineOA: "rabpornora",
+              dateData: format(dateData, "dd-MM-yyyy"),
+              timeData: format(dateData, "HH:mm"),
+            },
+            dateTimeData: format(dateData, "dd-MM-yyyy"),
+          },
+        });
+      } else {
+        const postNewRecord = await axios({
+          method: "put",
+          headers: { "Content-Type": "application/json" },
+          url: "https://api.thedhamma.net/socialcollect/line/user",
+          data: {
+            user: {
+              userId: userData.userId,
+              userName: userData.displayName,
+              userProfile: userData.pictureUrl,
+              typeUrl: "web",
+              lineOA: "rabpornora",
+              dateData: format(dateData, "dd-MM-yyyy"),
+              timeData: format(dateData, "HH:mm"),
+            },
+            dateTimeData: format(dateData, "dd-MM-yyyy"),
+          },
+        });
+      }
 
+      const result = await axios({
+        method: "get",
+        url: "https://api.thedhamma.net/redirect/room/new",
+      });
+
+      //console.log(result);
+      if (result.status === 200) {
+        setData(result.data);
+        const getSignatures = await axios({
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          url: "https://api.thedhamma.net/genSignature",
+          data: {
+            meetingNumber: result.data.roomID,
+            role: 0,
+          },
+        });
+        //console.log(getSignatures.data.signature);
+        //console.log(getSignatures.data);
+        startMeeting(
+          getSignatures.data,
+          result.data.roomID,
+          result.data.passcode
+        );
+      }
+    }
     setIsLoading(false);
   };
 
@@ -136,9 +208,8 @@ export default ({ props }) => {
         if (urlData.url !== undefined) {
           window.location.href = urlData.base_url;
         } else {
-          // window.location.href =
-          //   "https://dhammakaya-network.zoom.us/j/83471539842?pwd=bzV3aE1mZ3dmYU96Qkd0YlFvY2lidz09";
           window.location.href =
+            // "https://dhammakaya-network.zoom.us/j/83471539842?pwd=bzV3aE1mZ3dmYU96Qkd0YlFvY2lidz09";
             "https://zoom.us/j/94881671898?pwd=elRXS0NJN2dDL0l5V2tOVjFkWUNSdz09&openExternalBrowser=1";
         }
       }
@@ -147,43 +218,25 @@ export default ({ props }) => {
     setIsLoadingUrl(false);
   };
 
-  // const Card = () => {
-  //   const ref = useRef();
-  //   const { currentBreakpoint } = useDimensions(ref, {
-  //     // The "currentBreakpoint" will be the object key based on the target's width
-  //     // for instance, 0px - 319px (currentBreakpoint = XS), 320px - 479px (currentBreakpoint = SM) and so on
-  //     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 640 },
-  //     onResize: ({ currentBreakpoint }) => {
-  //       // Now the event callback will be triggered when breakpoint is changed
-  //       // we can also access the "currentBreakpoint" here
-  //     },
-  //   }
-  // ,)
-  // }
-
-  // render front page
   return (
     <>
       <Helmet>
-        <title>Zoom on web by ธรรมล้านดวง</title>
+        <title>Zoom on web by รับพรพระ 222,222 รูป</title>
 
         <meta name="format-detection" content="telephone=yes"></meta>
-        <meta name="title" content="Zoom on Web by ธรรมล้านดวง"></meta>
-        <meta
-          name="description"
-          content="เพจธรรมล้านดวง ร่วมสวดธรรมจักรทุกวัน 2 ทุ่ม"
-        ></meta>
+        <meta name="title" content="Zoom on Web by รับพรพระ 222,222 รูป"></meta>
+        <meta name="description" content="รับพรพระ 222,222 รูป"></meta>
         <meta property="og:type" content="website"></meta>
-        <meta property="og:url" content="https://zoom.thedhamma.net"></meta>
-        <meta property="og:title" content="Zoom on Web by ธรรมล้านดวง"></meta>
         <meta
-          property="og:description"
-          content="เพจธรรมล้านดวง ร่วมสวดธรรมจักรทุกวัน 2 ทุ่ม"
+          property="og:url"
+          content="https://zoom.thedhamma.net/redirect"
         ></meta>
         <meta
-          property="og:image"
-          content="https://logo-file-dhmom.s3.ap-southeast-1.amazonaws.com/tbLogo_resize.png"
+          property="og:title"
+          content="Zoom on Web by รับพรพระ 222,222 รูป"
         ></meta>
+        <meta property="og:description" content="รับพรพระ 222,222 รูป"></meta>
+        <meta property="og:image" content="g"></meta>
         <link
           type="text/css"
           rel="stylesheet"
