@@ -2,35 +2,23 @@ import React, { useState, useEffect } from "react";
 import "../css/layout.css";
 import "../css/background-image.css";
 import Helmet from "react-helmet";
+import firebase from "gatsby-plugin-firebase";
 import axios from "axios";
-import { format } from "date-fns";
 import Spinner from "@atlaskit/spinner";
-import { ZoomMtg } from "@zoomus/websdk";
 import Textfield from "@atlaskit/textfield";
 import Button from "@atlaskit/button";
 import backLeft from "../images/left.png";
 import backRight from "../images/right.png";
 import backBottom from "../images/logo.png";
+import { format } from "date-fns";
 
 const isBrowser = typeof window !== "undefined";
 
 export default ({ props }) => {
   useEffect(async () => {
-    import("@zoomus/websdk").then((module) => {
-      const { ZoomMtg } = module;
-
-      ZoomMtg.setZoomJSLib("https://source.zoom.us/1.9.6/lib", "/av");
-      console.log("checkSystemRequirements");
-      console.log(JSON.stringify(ZoomMtg.checkSystemRequirements()));
-      ZoomMtg.preLoadWasm();
-      ZoomMtg.prepareJssdk();
-      ZoomMtg.i18n.load("en-US");
-      ZoomMtg.i18n.reload("en-US");
-    });
-
     const liff = window.liff;
     try {
-      await liff.init({ liffId: "1656224658-1LbP7pB9" });
+      await liff.init({ liffId: "1656318900-MdkDNb57" });
       if (!liff.isLoggedIn()) {
         liff.login();
       } else {
@@ -38,9 +26,11 @@ export default ({ props }) => {
           let response = await liff.getProfile();
           if (Object.keys(response).length != 0) {
             setuserData(response);
+            // console.log(response);
           } else {
             let response = await liff.getProfile();
             setuserData(response);
+            // console.log(response);
           }
         } catch (error) {
           console.log(error);
@@ -51,202 +41,76 @@ export default ({ props }) => {
     }
   }, []);
 
-  // data name
-  let randomNumber = 0;
-  function getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
-  }
-  randomNumber =
-    "ธรรมล้านดวง " + getRandomIntInclusive(100000, 999999).toString();
-
-  const [value, setValue] = useState(randomNumber);
-  const [currentDate, setCurrentDate] = useState("");
-  const handleChange = (e) => setValue(e.target.value);
+  const [value1, setValue1] = useState("");
+  const handleChange1 = (e) => setValue1(e.target.value);
+  const [value2, setValue2] = useState("");
+  const handleChange2 = (e) => setValue2(e.target.value);
+  const [value3, setValue3] = useState("");
+  const handleChange3 = (e) => setValue3(e.target.value);
+  const [value4, setValue4] = useState("");
+  const handleChange4 = (e) => setValue4(e.target.value);
+  const [value5, setValue5] = useState("");
+  const handleChange5 = (e) => setValue5(e.target.value);
+  const [value6, setValue6] = useState("");
+  const handleChange6 = (e) => setValue6(e.target.value);
+  const [value7, setValue7] = useState("");
+  const handleChange7 = (e) => setValue7(e.target.value);
 
   //data request
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
-  const [data, setData] = useState({});
   const [urlData, setUrlData] = useState({});
   const [userData, setuserData] = useState({});
+  const [data, setData] = React.useState(null);
 
-  function startMeeting(signature, meetingNumber, passWord) {
-    if (isBrowser) {
-      document.getElementById("zmmtg-root").style.display = "block";
-      ZoomMtg.init({
-        leaveUrl: "https://zoom.thedhamma.net",
-        isSupportAV: true,
-        disablePreview: true, // default false
-        success: (success) => {
-          console.log(success);
-          ZoomMtg.join({
-            signature: signature,
-            meetingNumber: meetingNumber,
-            userName: value,
-            apiKey: "Wr1maFh7QnOOCvAOhiCKTw",
-            userEmail: "",
-            passWord: passWord,
-            success: (success) => {
-              console.log("join meeting success");
-              console.log(success);
+  const db = firebase.firestore();
 
-              const buttonLeave =
-                document.getElementsByClassName("zmu-btn--danger");
-              if (buttonLeave.length !== 0) {
-                buttonLeave[0].addEventListener("click", () => {
-                  ZoomMtg.leaveMeeting({});
-                });
-              }
-            },
-            error: (error) => {
-              console.log(error);
-            },
-          });
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      });
-    }
-  }
+  const sendbutton = () => {
+    let dateData = new Date();
+    let query_date = format(dateData, "dd-MM-yyyy");
 
-  const requestTargetRoom = async () => {
-    setIsLoading(true);
-    if (Object.keys(userData).length != 0) {
-      let dateData = new Date();
-      let query_date = format(dateData, "dd-MM-yyyy");
-      // change api
-      const checkDate = await axios({
-        method: "get",
-        url: "https://api.thedhamma.net/socialcollect/line/date",
-        params: {
-          date: query_date,
-        },
-      });
-      if (Object.keys(checkDate.data).length == 0) {
-        const postNewRecord = await axios({
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          url: "https://api.thedhamma.net/socialcollect/line/user",
-          data: {
-            user: {
-              userId: userData.userId,
-              userName: userData.displayName,
-              userProfile: userData.pictureUrl,
-              typeUrl: "web",
-              lineOA: "rabpornora",
-              dateData: format(dateData, "dd-MM-yyyy"),
-              timeData: format(dateData, "HH:mm"),
-            },
-            dateTimeData: format(dateData, "dd-MM-yyyy"),
-          },
-        });
-      } else {
-        const postNewRecord = await axios({
-          method: "put",
-          headers: { "Content-Type": "application/json" },
-          url: "https://api.thedhamma.net/socialcollect/line/user",
-          data: {
-            user: {
-              userId: userData.userId,
-              userName: userData.displayName,
-              userProfile: userData.pictureUrl,
-              typeUrl: "web",
-              lineOA: "rabpornora",
-              dateData: format(dateData, "dd-MM-yyyy"),
-              timeData: format(dateData, "HH:mm"),
-            },
-            dateTimeData: format(dateData, "dd-MM-yyyy"),
-          },
-        });
-      }
+    console.log(
+      userData.userId,
+      userData.displayName,
+      userData.pictureUrl,
+      value1,
+      value2,
+      value3,
+      value4,
+      value5,
+      value6,
+      value7
+    );
 
-      const result = await axios({
-        method: "get",
-        url: "https://api.thedhamma.net/redirect/room/new",
-      });
-
-      //console.log(result);
-      if (result.status === 200) {
-        setData(result.data);
-        const getSignatures = await axios({
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          url: "https://api.thedhamma.net/genSignature",
-          data: {
-            meetingNumber: result.data.roomID,
-            role: 0,
-          },
-        });
-        //console.log(getSignatures.data.signature);
-        //console.log(getSignatures.data);
-        startMeeting(
-          getSignatures.data,
-          result.data.roomID,
-          result.data.passcode
-        );
-      }
-    }
-    setIsLoading(false);
-  };
-
-  const urlTargetRoom = async () => {
-    setIsLoadingUrl(true);
-
-    const result = await axios({
-      method: "get",
-      url: "https://api.thedhamma.net/redirect/room/new",
+    db.collection("monkData").add({
+      userId: userData.userId,
+      name: value1,
+      surname: value2,
+      position: value3,
+      rank: value4,
+      templeName: value5,
+      province: value6,
+      phoneNumber: value7,
+      displayName: userData.displayName,
+      pictureUrl: userData.pictureUrl,
+      timestamp: query_date,
     });
 
-    //console.log(result);
-    if (result.status == 200) {
-      setUrlData(result.data);
-      if (isBrowser) {
-        //window.open(urlData.url);
-        if (urlData.url !== undefined) {
-          window.location.href = urlData.base_url;
-        } else {
-          window.location.href =
-            // "https://dhammakaya-network.zoom.us/j/83471539842?pwd=bzV3aE1mZ3dmYU96Qkd0YlFvY2lidz09";
-            "https://zoom.us/j/94881671898?pwd=elRXS0NJN2dDL0l5V2tOVjFkWUNSdz09&openExternalBrowser=1";
-        }
-      }
-    }
-
-    setIsLoadingUrl(false);
+    console.log("complete");
   };
 
   return (
     <>
       <Helmet>
-        <title>Zoom on web by รับพรพระ 222,222 รูป</title>
+        <title>คณะสงฆ์ช่วยภัยโควิด</title>
 
         <meta name="format-detection" content="telephone=yes"></meta>
-        <meta name="title" content="Zoom on Web by รับพรพระ 222,222 รูป"></meta>
-        <meta name="description" content="รับพรพระ 222,222 รูป"></meta>
+        <meta name="title" content="คณะสงฆ์ช่วยภัยโควิด"></meta>
+        <meta name="description" content="คณะสงฆ์ช่วยภัยโควิด"></meta>
         <meta property="og:type" content="website"></meta>
-        <meta
-          property="og:url"
-          content="https://zoom.thedhamma.net/redirect"
-        ></meta>
-        <meta
-          property="og:title"
-          content="Zoom on Web by รับพรพระ 222,222 รูป"
-        ></meta>
-        <meta property="og:description" content="รับพรพระ 222,222 รูป"></meta>
+        <meta property="og:title" content="คณะสงฆ์ช่วยภัยโควิด"></meta>
+        <meta property="og:description" content="คณะสงฆ์ช่วยภัยโควิด"></meta>
         <meta property="og:image" content="g"></meta>
-        <link
-          type="text/css"
-          rel="stylesheet"
-          href="https://source.zoom.us/1.9.6/css/bootstrap.css"
-        />
-        <link
-          type="text/css"
-          rel="stylesheet"
-          href="https://source.zoom.us/1.9.6/css/react-select.css"
-        />
       </Helmet>
 
       <div
@@ -263,7 +127,7 @@ export default ({ props }) => {
         <div
           className="colorbg"
           style={{
-            height: "34%",
+            height: "20%",
             width: "100%",
             padding: 0,
             display: "flex",
@@ -287,7 +151,7 @@ export default ({ props }) => {
               fontFamily: "duangkaewregular",
             }}
           >
-            เพจธรรมล้านดวง
+            คณะสงฆ์ช่วยภัยโควิด
           </h1>
           <div
             className="bgimgTopRight"
@@ -304,26 +168,13 @@ export default ({ props }) => {
           className="bgimgBottom"
           style={{
             backgroundColor: "#ffffff",
-            height: "66%",
+            height: "83%",
             width: "100%",
             position: "absolute",
             bottom: 0,
             backgroundImage: `url(${backBottom})`,
           }}
         >
-          {/* part1 */}
-          <div style={{ width: "100%", backgroundColor: "#d79f00" }}>
-            <div
-              style={{
-                width: "100%",
-                height: 50,
-                backgroundColor: "#ffffff",
-                borderRadius: "30px 30px 0 0",
-                boxShadow: "0 -7px 7px -5px #5B5B5B",
-              }}
-            ></div>
-          </div>
-
           {/* part2 */}
           <div
             style={{
@@ -334,28 +185,258 @@ export default ({ props }) => {
               position: "relative",
             }}
           >
-            <h3 style={{ marginTop: 0, marginBottom: 0, color: "#e4bb4f" }}>
-              ร่วมสวดธรรมจักรทุกวัน 2 ทุ่ม
-            </h3>
-            <h4
+            <h3
               style={{
-                color: "#96938c",
-                marginTop: "40px",
+                marginTop: 20,
+                marginBottom: 20,
+                alignItems: "center",
+                color: "#e4bb4f",
+              }}
+            >
+              กรอกข้อมูล เพื่อ ร่วมงานถวายสังฆทานคณะสงฆ์ 100,000 รูป
+            </h3>
+
+            {/* title+textfield 1 */}
+
+            <div
+              style={{
+                width: "80%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <h4
+                style={{
+                  width: "30%",
+                  color: "#96938c",
+                }}
+              >
+                ชื่อ
+              </h4>
+
+              <Textfield
+                placeholder="ชื่อ
+      "
+                name="basic"
+                defaultValue={value1}
+                onChange={handleChange1}
+                aria-label="default text field"
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+            {/* title+textfield 2*/}
+            <div
+              style={{
+                width: "80%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <h4
+                style={{
+                  width: "30%",
+                  color: "#96938c",
+                }}
+              >
+                ฉายา
+              </h4>
+
+              <Textfield
+                placeholder="ฉายา
+      "
+                name="basic"
+                defaultValue={value2}
+                onChange={handleChange2}
+                aria-label="default text field"
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+            {/* title+textfield 3*/}
+            <div
+              style={{
+                width: "80%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <h4
+                style={{
+                  width: "30%",
+                  color: "#96938c",
+                }}
+              >
+                สมณศักดิ์
+              </h4>
+
+              <Textfield
+                placeholder="สมณศักดิ์
+      "
+                name="basic"
+                defaultValue={value3}
+                onChange={handleChange3}
+                aria-label="default text field"
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+            {/* title+textfield 4*/}
+            <div
+              style={{
+                width: "80%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <h4
+                style={{
+                  width: "30%",
+                  color: "#96938c",
+                }}
+              >
+                ตำแหน่ง
+              </h4>
+
+              <Textfield
+                placeholder="ตำแหน่ง
+      "
+                name="basic"
+                defaultValue={value4}
+                onChange={handleChange4}
+                aria-label="default text field"
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+
+            {/* title+textfield 5*/}
+            <div
+              style={{
+                width: "80%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <h4
+                style={{
+                  width: "30%",
+                  color: "#96938c",
+                }}
+              >
+                วัด
+              </h4>
+
+              <Textfield
+                placeholder="วัด
+      "
+                name="basic"
+                defaultValue={value5}
+                onChange={handleChange5}
+                aria-label="default text field"
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+            {/* title+textfield 6*/}
+            <div
+              style={{
+                width: "80%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <h4
+                style={{
+                  width: "30%",
+                  color: "#96938c",
+                }}
+              >
+                จังหวัด
+              </h4>
+
+              <Textfield
+                placeholder="จังหวัด
+      "
+                name="basic"
+                defaultValue={value6}
+                onChange={handleChange6}
+                aria-label="default text field"
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
+            {/* title+textfield 7*/}
+            <div
+              style={{
+                width: "80%",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
                 marginBottom: "30px",
               }}
             >
-              กรอกชื่อ
-            </h4>
+              <h4
+                style={{
+                  width: "30%",
+                  color: "#96938c",
+                }}
+              >
+                เบอร์โทร
+              </h4>
 
-            <Textfield
-              placeholder="กรอกชื่อของคุณ
+              <Textfield
+                placeholder="เบอร์โทร
       "
-              name="basic"
-              defaultValue={value}
-              onChange={handleChange}
-              aria-label="default text field"
-              css={{ width: "60%", marginBottom: "30px", textAlign: "center" }}
-            />
+                name="basic"
+                defaultValue={value7}
+                onChange={handleChange7}
+                aria-label="default text field"
+                css={{
+                  width: "100%",
+                  textAlign: "center",
+                  borderRadius: "10px",
+                }}
+              />
+            </div>
 
             <Button
               appearance="primary"
@@ -364,18 +445,19 @@ export default ({ props }) => {
                 borderRadius: "20px 20px 20px 20px",
                 width: "160px",
                 boxShadow: "2px 5px 16px 0px #A3A3A3",
-                marginBottom: "30px",
+                marginBottom: "20px",
+                margintop: "20px",
               }}
-              onClick={requestTargetRoom}
+              onClick={sendbutton}
             >
               {isLoading && <Spinner />}
-              &nbsp;&nbsp; เข้าห้อง zoom
+              &nbsp;&nbsp; ตกลง
             </Button>
 
-            <button onClick={urlTargetRoom} style={{ color: "#dea10a" }}>
+            {/* <button onClick={sendbutton} style={{ color: "#dea10a" }}>
               {isLoadingUrl && <Spinner />}
               &nbsp;&nbsp;ร่วมกิจกรรมผ่าน Application Zoom
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

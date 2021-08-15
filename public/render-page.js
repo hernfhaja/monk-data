@@ -395,7 +395,10 @@ function HTML(props) {
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("meta", {
     name: "viewport",
     content: "width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
-  }), props.headComponents), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("body", props.bodyAttributes, props.preBodyComponents, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  }), props.headComponents, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("script", {
+    charSet: "utf-8",
+    src: "https://static.line-scdn.net/liff/edge/versions/2.12.0/sdk.js"
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("body", props.bodyAttributes, props.preBodyComponents, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     key: `body`,
     id: "___gatsby",
     dangerouslySetInnerHTML: {
@@ -6097,24 +6100,24 @@ module.exports = withSideEffect;
 /***/ }),
 
 /***/ "react-dom/server":
-/*!***************************************************************************************************!*\
-  !*** external "/Users/hern/Desktop/All_project/ets-zoom-client/node_modules/react-dom/server.js" ***!
-  \***************************************************************************************************/
+/*!*********************************************************************************************!*\
+  !*** external "/Users/hern/Desktop/All_project/monk-data/node_modules/react-dom/server.js" ***!
+  \*********************************************************************************************/
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("/Users/hern/Desktop/All_project/ets-zoom-client/node_modules/react-dom/server.js");;
+module.exports = require("/Users/hern/Desktop/All_project/monk-data/node_modules/react-dom/server.js");;
 
 /***/ }),
 
 /***/ "react":
-/*!**********************************************************************************************!*\
-  !*** external "/Users/hern/Desktop/All_project/ets-zoom-client/node_modules/react/index.js" ***!
-  \**********************************************************************************************/
+/*!****************************************************************************************!*\
+  !*** external "/Users/hern/Desktop/All_project/monk-data/node_modules/react/index.js" ***!
+  \****************************************************************************************/
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("/Users/hern/Desktop/All_project/ets-zoom-client/node_modules/react/index.js");;
+module.exports = require("/Users/hern/Desktop/All_project/monk-data/node_modules/react/index.js");;
 
 /***/ })
 
