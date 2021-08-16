@@ -6,13 +6,14 @@ import firebase from "gatsby-plugin-firebase";
 import axios from "axios";
 import Spinner from "@atlaskit/spinner";
 import Textfield from "@atlaskit/textfield";
-import Button from "@atlaskit/button";
-import backLeft from "../images/left.png";
-import backRight from "../images/right.png";
-import backBottom from "../images/logo.png";
-import { format } from "date-fns";
+import CustomThemeButton from "@atlaskit/button/custom-theme-button";
+import BG from "../images/BG.jpg";
+import head from "../images/head.png";
+import star from "../images/star.png";
+import button from "../images/button.png";
+import redBG from "../images/red-bg.png";
 
-const isBrowser = typeof window !== "undefined";
+import { format } from "date-fns";
 
 export default ({ props }) => {
   useEffect(async () => {
@@ -49,61 +50,48 @@ export default ({ props }) => {
   const handleChange3 = (e) => setValue3(e.target.value);
   const [value4, setValue4] = useState("");
   const handleChange4 = (e) => setValue4(e.target.value);
-  const [value5, setValue5] = useState("");
-  const handleChange5 = (e) => setValue5(e.target.value);
-  const [value6, setValue6] = useState("");
-  const handleChange6 = (e) => setValue6(e.target.value);
-  const [value7, setValue7] = useState("");
-  const handleChange7 = (e) => setValue7(e.target.value);
 
   //data request
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
-  const [urlData, setUrlData] = useState({});
   const [userData, setuserData] = useState({});
-  const [data, setData] = React.useState(null);
 
+  //connect firebase
   const db = firebase.firestore();
 
-  const sendbutton = () => {
+  //function click button
+  const sendbutton = async () => {
     let dateData = new Date();
     let query_date = format(dateData, "dd-MM-yyyy");
-
-    console.log(
-      userData.userId,
-      userData.displayName,
-      userData.pictureUrl,
-      value1,
-      value2,
-      value3,
-      value4,
-      value5,
-      value6,
-      value7
-    );
-
-    db.collection("monkData").add({
-      userId: userData.userId,
-      name: value1,
-      surname: value2,
-      position: value3,
-      rank: value4,
-      templeName: value5,
-      province: value6,
-      phoneNumber: value7,
-      displayName: userData.displayName,
-      pictureUrl: userData.pictureUrl,
-      timestamp: query_date,
-    });
-
-    console.log("complete");
+    try {
+      await db.collection("monkData").add({
+        userId: userData.userId,
+        name: value1,
+        rank: value2,
+        templeName: value3,
+        phoneNumber: value4,
+        displayName: userData.displayName,
+        pictureUrl: userData.pictureUrl,
+        timestamp: query_date,
+      });
+      console.log(
+        userData.userId,
+        value1,
+        value2,
+        value3,
+        value4,
+        userData.displayName,
+        userData.pictureUrl,
+        query_date
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    // console.log("complete");
   };
 
   return (
     <>
       <Helmet>
         <title>คณะสงฆ์ช่วยภัยโควิด</title>
-
         <meta name="format-detection" content="telephone=yes"></meta>
         <meta name="title" content="คณะสงฆ์ช่วยภัยโควิด"></meta>
         <meta name="description" content="คณะสงฆ์ช่วยภัยโควิด"></meta>
@@ -113,69 +101,69 @@ export default ({ props }) => {
         <meta property="og:image" content="g"></meta>
       </Helmet>
 
-      <div
-        style={{
-          display: "flex",
-          height: "100%",
-          justifyContent: "flex-start",
-          flexDirection: "column",
-          alignItems: "center",
-          position: "relative",
-        }}
-      >
+      <div className="mainBg">
         {/* Top */}
-        <div
+        {/* <div
           className="colorbg"
           style={{
-            height: "20%",
+            height: "12%",
             width: "100%",
             padding: 0,
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "top",
             alignItems: "center",
             position: "relative",
+            flexDirection: "column",
+            backgroundImage: `url(${head})`,
+            backgroundSize: "cover",
+            position: "absolute",
+            top: 0,
           }}
         >
-          <div
-            className="bgimgTopLeft"
-            style={{
-              height: "60%",
-              width: "40%",
-              backgroundImage: `url(${backLeft})`,
-            }}
-          ></div>
-          <h1
+          <h3
             style={{
               color: "#5c2605",
               textAlign: "center",
               fontFamily: "duangkaewregular",
+              fontSize: "25px",
+              fontWeight: "normal",
+              padding: 0,
+              marginTop: 10,
+              marginBottom: 0,
             }}
           >
-            คณะสงฆ์ช่วยภัยโควิด
-          </h1>
-          <div
-            className="bgimgTopRight"
+            กราบอาราทนานิมนต์คณะสงฆ์ <br></br>
+          </h3>
+
+          <h3
             style={{
-              height: "100%",
-              width: "50%",
-              backgroundImage: `url(${backRight})`,
+              color: "#5c2605",
+              textAlign: "center",
+              fontFamily: "duangkaewregular",
+              fontSize: "25px",
+              fontWeight: "normal",
+              padding: 0,
+              marginTop: 5,
+              marginBottom: 0,
             }}
-          ></div>
-        </div>
+          >
+            ร่วมพิธีถวายมหาสังฆทาน (ออนไลน์)
+          </h3>
+        </div> */}
 
         {/* Bottom */}
         <div
           className="bgimgBottom"
           style={{
-            backgroundColor: "#ffffff",
-            height: "83%",
+            height: "86%",
             width: "100%",
             position: "absolute",
             bottom: 0,
-            backgroundImage: `url(${backBottom})`,
+            margintop: 16,
           }}
         >
-          {/* part2 */}
+          {/* part form */}
+
           <div
             style={{
               display: "flex",
@@ -185,24 +173,13 @@ export default ({ props }) => {
               position: "relative",
             }}
           >
-            <h3
-              style={{
-                marginTop: 20,
-                marginBottom: 20,
-                alignItems: "center",
-                color: "#e4bb4f",
-              }}
-            >
-              กรอกข้อมูล เพื่อ ร่วมงานถวายสังฆทานคณะสงฆ์ 100,000 รูป
-            </h3>
-
             {/* title+textfield 1 */}
 
             <div
               style={{
-                width: "80%",
+                width: "90%",
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 position: "relative",
@@ -210,33 +187,52 @@ export default ({ props }) => {
             >
               <h4
                 style={{
-                  width: "30%",
-                  color: "#96938c",
+                  width: "97%",
+                  textAlign: "left",
+                  marginBottom: "5px",
+                  fontSize: "20px",
+                  color: "#660305",
+                  fontWeight: "520",
                 }}
               >
-                ชื่อ
+                <img
+                  src={star}
+                  style={{
+                    width: "23px",
+                    height: "23px",
+                    marginTop: "0px",
+                    marginRight: "10px",
+                  }}
+                />
+                ชื่อ-ฉายา / สมณศักดิ์
               </h4>
 
               <Textfield
-                placeholder="ชื่อ
+                placeholder="ชื่อ ฉายา/สมณศักดิ์
       "
                 name="basic"
                 defaultValue={value1}
                 onChange={handleChange1}
-                aria-label="default text field"
+                aria-label="customized text field"
                 css={{
+                  padding: 1,
+                  "& > [data-ds--text-field--input]": {
+                    // input style
+                    fontSize: 15,
+                  },
                   width: "100%",
                   textAlign: "center",
                   borderRadius: "10px",
                 }}
               />
             </div>
+
             {/* title+textfield 2*/}
             <div
               style={{
-                width: "80%",
+                width: "90%",
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 position: "relative",
@@ -244,78 +240,23 @@ export default ({ props }) => {
             >
               <h4
                 style={{
-                  width: "30%",
-                  color: "#96938c",
+                  width: "97%",
+                  textAlign: "left",
+                  marginBottom: "5px",
+                  fontSize: "20px",
+                  color: "#660305",
+                  fontWeight: "520",
                 }}
               >
-                ฉายา
-              </h4>
-
-              <Textfield
-                placeholder="ฉายา
-      "
-                name="basic"
-                defaultValue={value2}
-                onChange={handleChange2}
-                aria-label="default text field"
-                css={{
-                  width: "100%",
-                  textAlign: "center",
-                  borderRadius: "10px",
-                }}
-              />
-            </div>
-            {/* title+textfield 3*/}
-            <div
-              style={{
-                width: "80%",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-              }}
-            >
-              <h4
-                style={{
-                  width: "30%",
-                  color: "#96938c",
-                }}
-              >
-                สมณศักดิ์
-              </h4>
-
-              <Textfield
-                placeholder="สมณศักดิ์
-      "
-                name="basic"
-                defaultValue={value3}
-                onChange={handleChange3}
-                aria-label="default text field"
-                css={{
-                  width: "100%",
-                  textAlign: "center",
-                  borderRadius: "10px",
-                }}
-              />
-            </div>
-            {/* title+textfield 4*/}
-            <div
-              style={{
-                width: "80%",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-              }}
-            >
-              <h4
-                style={{
-                  width: "30%",
-                  color: "#96938c",
-                }}
-              >
+                <img
+                  src={star}
+                  style={{
+                    width: "23px",
+                    height: "23px",
+                    marginTop: "0px",
+                    marginRight: "10px",
+                  }}
+                />
                 ตำแหน่ง
               </h4>
 
@@ -323,10 +264,15 @@ export default ({ props }) => {
                 placeholder="ตำแหน่ง
       "
                 name="basic"
-                defaultValue={value4}
-                onChange={handleChange4}
-                aria-label="default text field"
+                defaultValue={value2}
+                onChange={handleChange2}
+                aria-label="customized text field"
                 css={{
+                  padding: 1,
+                  "& > [data-ds--text-field--input]": {
+                    // input style
+                    fontSize: 15,
+                  },
                   width: "100%",
                   textAlign: "center",
                   borderRadius: "10px",
@@ -334,12 +280,12 @@ export default ({ props }) => {
               />
             </div>
 
-            {/* title+textfield 5*/}
+            {/* title+textfield 3*/}
             <div
               style={{
-                width: "80%",
+                width: "90%",
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 position: "relative",
@@ -347,10 +293,23 @@ export default ({ props }) => {
             >
               <h4
                 style={{
-                  width: "30%",
-                  color: "#96938c",
+                  width: "97%",
+                  textAlign: "left",
+                  marginBottom: "5px",
+                  fontSize: "20px",
+                  color: "#660305",
+                  fontWeight: "520",
                 }}
               >
+                <img
+                  src={star}
+                  style={{
+                    width: "23px",
+                    height: "23px",
+                    marginTop: "0px",
+                    marginRight: "10px",
+                  }}
+                />
                 วัด
               </h4>
 
@@ -358,101 +317,90 @@ export default ({ props }) => {
                 placeholder="วัด
       "
                 name="basic"
-                defaultValue={value5}
-                onChange={handleChange5}
-                aria-label="default text field"
+                defaultValue={value3}
+                onChange={handleChange3}
+                aria-label="customized text field"
+                // aria-label="default text field"
                 css={{
+                  padding: 1,
+                  "& > [data-ds--text-field--input]": {
+                    // input style
+                    fontSize: 15,
+                  },
                   width: "100%",
                   textAlign: "center",
                   borderRadius: "10px",
+                  height: "200px",
                 }}
               />
             </div>
-            {/* title+textfield 6*/}
-            <div
-              style={{
-                width: "80%",
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-              }}
-            >
-              <h4
-                style={{
-                  width: "30%",
-                  color: "#96938c",
-                }}
-              >
-                จังหวัด
-              </h4>
 
-              <Textfield
-                placeholder="จังหวัด
-      "
-                name="basic"
-                defaultValue={value6}
-                onChange={handleChange6}
-                aria-label="default text field"
-                css={{
-                  width: "100%",
-                  textAlign: "center",
-                  borderRadius: "10px",
-                }}
-              />
-            </div>
-            {/* title+textfield 7*/}
+            {/* title+textfield 4*/}
             <div
               style={{
-                width: "80%",
+                width: "90%",
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 position: "relative",
-                marginBottom: "30px",
               }}
             >
               <h4
                 style={{
-                  width: "30%",
-                  color: "#96938c",
+                  width: "97%",
+                  textAlign: "left",
+                  marginBottom: "5px",
+                  fontSize: "20px",
+                  color: "#660305",
+                  fontWeight: "520",
                 }}
               >
+                <img
+                  src={star}
+                  style={{
+                    width: "23px",
+                    height: "23px",
+                    marginTop: "0px",
+                    marginRight: "10px",
+                  }}
+                />
                 เบอร์โทร
               </h4>
 
               <Textfield
                 placeholder="เบอร์โทร
       "
+                aria-label="customized text field"
                 name="basic"
-                defaultValue={value7}
-                onChange={handleChange7}
-                aria-label="default text field"
+                defaultValue={value4}
+                onChange={handleChange4}
                 css={{
+                  padding: 1,
+                  "& > [data-ds--text-field--input]": {
+                    // input style
+                    fontSize: 15,
+                  },
                   width: "100%",
                   textAlign: "center",
                   borderRadius: "10px",
+                  marginBottom: "100px",
                 }}
               />
             </div>
 
-            <Button
-              appearance="primary"
-              style={{
-                backgroundColor: "#d79f00",
-                borderRadius: "20px 20px 20px 20px",
-                width: "160px",
-                boxShadow: "2px 5px 16px 0px #A3A3A3",
-                marginBottom: "20px",
-                margintop: "20px",
-              }}
-              onClick={sendbutton}
-            >
-              {isLoading && <Spinner />}
-              &nbsp;&nbsp; ตกลง
-            </Button>
+            <button>
+              <img
+                src={button}
+                style={{
+                  marginTop: "30px",
+                  width: "250px",
+                  height: "50px",
+                }}
+                alt="my image"
+                onClick={sendbutton}
+              />
+            </button>
 
             {/* <button onClick={sendbutton} style={{ color: "#dea10a" }}>
               {isLoadingUrl && <Spinner />}
