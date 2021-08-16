@@ -275,7 +275,6 @@ export default ({ props }) => {
                   width: "100%",
                   textAlign: "center",
                   borderRadius: "10px",
-                  height: "200px",
                 }}
               />
             </div>
