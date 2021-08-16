@@ -3,19 +3,14 @@ import "../css/layout.css";
 import "../css/background-image.css";
 import Helmet from "react-helmet";
 import firebase from "gatsby-plugin-firebase";
-import axios from "axios";
-import Spinner from "@atlaskit/spinner";
 import Textfield from "@atlaskit/textfield";
-import CustomThemeButton from "@atlaskit/button/custom-theme-button";
-import BG from "../images/BG.jpg";
-import head from "../images/head.png";
 import star from "../images/star.png";
 import button from "../images/button.png";
-import redBG from "../images/red-bg.png";
 
 import { format } from "date-fns";
 
 export default ({ props }) => {
+  //lineliff
   useEffect(async () => {
     const liff = window.liff;
     try {
@@ -57,7 +52,7 @@ export default ({ props }) => {
   //connect firebase
   const db = firebase.firestore();
 
-  //function click button
+  //function send data to DB
   const sendbutton = async () => {
     let dateData = new Date();
     let query_date = format(dateData, "dd-MM-yyyy");
@@ -72,20 +67,20 @@ export default ({ props }) => {
         pictureUrl: userData.pictureUrl,
         timestamp: query_date,
       });
-      console.log(
-        userData.userId,
-        value1,
-        value2,
-        value3,
-        value4,
-        userData.displayName,
-        userData.pictureUrl,
-        query_date
-      );
+      // console.log(
+      //   userData.userId,
+      //   value1,
+      //   value2,
+      //   value3,
+      //   value4,
+      //   userData.displayName,
+      //   userData.pictureUrl,
+      //   query_date
+      // );
+      console.log("send data complete");
     } catch (error) {
       console.log(error);
     }
-    // console.log("complete");
   };
 
   return (
@@ -101,57 +96,8 @@ export default ({ props }) => {
         <meta property="og:image" content="g"></meta>
       </Helmet>
 
+      {/* Main div */}
       <div className="mainBg">
-        {/* Top */}
-        {/* <div
-          className="colorbg"
-          style={{
-            height: "12%",
-            width: "100%",
-            padding: 0,
-            display: "flex",
-            justifyContent: "top",
-            alignItems: "center",
-            position: "relative",
-            flexDirection: "column",
-            backgroundImage: `url(${head})`,
-            backgroundSize: "cover",
-            position: "absolute",
-            top: 0,
-          }}
-        >
-          <h3
-            style={{
-              color: "#5c2605",
-              textAlign: "center",
-              fontFamily: "duangkaewregular",
-              fontSize: "25px",
-              fontWeight: "normal",
-              padding: 0,
-              marginTop: 10,
-              marginBottom: 0,
-            }}
-          >
-            กราบอาราทนานิมนต์คณะสงฆ์ <br></br>
-          </h3>
-
-          <h3
-            style={{
-              color: "#5c2605",
-              textAlign: "center",
-              fontFamily: "duangkaewregular",
-              fontSize: "25px",
-              fontWeight: "normal",
-              padding: 0,
-              marginTop: 5,
-              marginBottom: 0,
-            }}
-          >
-            ร่วมพิธีถวายมหาสังฆทาน (ออนไลน์)
-          </h3>
-        </div> */}
-
-        {/* Bottom */}
         <div
           className="bgimgBottom"
           style={{
@@ -162,7 +108,7 @@ export default ({ props }) => {
             margintop: 16,
           }}
         >
-          {/* part form */}
+          {/*  Form */}
 
           <div
             style={{
@@ -173,7 +119,7 @@ export default ({ props }) => {
               position: "relative",
             }}
           >
-            {/* title+textfield 1 */}
+            {/* title + textfield 1 */}
 
             <div
               style={{
@@ -227,7 +173,7 @@ export default ({ props }) => {
               />
             </div>
 
-            {/* title+textfield 2*/}
+            {/* title + textfield 2*/}
             <div
               style={{
                 width: "90%",
@@ -280,7 +226,7 @@ export default ({ props }) => {
               />
             </div>
 
-            {/* title+textfield 3*/}
+            {/* title + textfield 3  */}
             <div
               style={{
                 width: "90%",
@@ -320,7 +266,6 @@ export default ({ props }) => {
                 defaultValue={value3}
                 onChange={handleChange3}
                 aria-label="customized text field"
-                // aria-label="default text field"
                 css={{
                   padding: 1,
                   "& > [data-ds--text-field--input]": {
@@ -335,7 +280,7 @@ export default ({ props }) => {
               />
             </div>
 
-            {/* title+textfield 4*/}
+            {/* title +textfield 4 */}
             <div
               style={{
                 width: "90%",
@@ -375,6 +320,8 @@ export default ({ props }) => {
                 name="basic"
                 defaultValue={value4}
                 onChange={handleChange4}
+                maxLength={10}
+                label="Max length of 5"
                 css={{
                   padding: 1,
                   "& > [data-ds--text-field--input]": {
@@ -388,12 +335,15 @@ export default ({ props }) => {
                 }}
               />
             </div>
-
-            <button>
+            <button
+              style={{
+                position: "relative",
+                marginTop: "30px",
+              }}
+            >
               <img
                 src={button}
                 style={{
-                  marginTop: "30px",
                   width: "250px",
                   height: "50px",
                 }}
@@ -401,11 +351,6 @@ export default ({ props }) => {
                 onClick={sendbutton}
               />
             </button>
-
-            {/* <button onClick={sendbutton} style={{ color: "#dea10a" }}>
-              {isLoadingUrl && <Spinner />}
-              &nbsp;&nbsp;ร่วมกิจกรรมผ่าน Application Zoom
-            </button> */}
           </div>
         </div>
       </div>
