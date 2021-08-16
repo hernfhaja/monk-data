@@ -23,7 +23,7 @@
     "axios": "^0.21.1",
     "date-fns": "^2.23.0",
     "firebase": "^8.9.1",
-    "gatsby": "^3.6.2",
+    "gatsby": "^3.11.1",
     "gatsby-background-image": "^1.5.3",
     "gatsby-plugin-build-date": "^1.0.0",
     "gatsby-plugin-firebase": "^0.2.0-beta.4",
